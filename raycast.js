@@ -14,21 +14,20 @@ const NUM_RAYS = WINDOW_WIDTH / WALL_STRIPE_WIDTH;
 
 
 
-
 class Map {
     constructor() {
         this.grid = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ['wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb'],
+            ['wb', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wg', 'ff', 'wb'],
+            ['wb', 'ff', 'ff', 'ff', 'ff', 'wr', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wg', 'ff', 'wb'],
+            ['wb', 'wr', 'wr', 'wr', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wg', 'ff', 'wg', 'ff', 'wb'],
+            ['wb', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wg', 'ff', 'wg', 'ff', 'wb'],
+            ['wb', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wg', 'wg', 'wg', 'wg', 'wg', 'ff', 'wb'],
+            ['wb', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wb'],
+            ['wb', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wb'],
+            ['wb', 'wg', 'wg', 'wg', 'wg', 'wg', 'ff', 'ff', 'ff', 'wg', 'wg', 'wg', 'wg', 'ff', 'wb'],
+            ['wb', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'ff', 'wb'],
+            ['wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb', 'wb']
         ];
     }	//checks if there is a wall from the grid at the supplied (x,y) coordinate
 	hasWallAt(x, y) {
@@ -37,15 +36,22 @@ class Map {
 		}
 		var mapGridIndexX = Math.floor(x / TILE_SIZE);
 		var mapGridIndexY = Math.floor(y / TILE_SIZE);
-		return this.grid[mapGridIndexY][mapGridIndexX] != 0; //the x and y are flipped, returns true or false if there is a wall or not
+		return (this.grid[mapGridIndexY][mapGridIndexX]) != 'ff'; //the x and y are flipped, returns true or false if there is a wall or not
+	}
+	// returns the 2nd index of the string of the wall, i.e r,g,b
+	wallColour(x, y) {
+		var mapGridIndexX = Math.floor(x / TILE_SIZE);
+		var mapGridIndexY = Math.floor(y / TILE_SIZE);
+		var colour = (this.grid[mapGridIndexY][mapGridIndexX]);
+		return colour[1];
 	}
 
-    render() {
+    render() { // minimap
         for (var i = 0; i < MAP_NUM_ROWS; i++) {
             for (var j = 0; j < MAP_NUM_COLS; j++) {
                 var tileX = j * TILE_SIZE; 
                 var tileY = i * TILE_SIZE;
-                var tileColor = this.grid[i][j] == 1 ? "#222" : "#fff";
+                var tileColor = (this.grid[i][j])[0] == 'w' ? "#222" : "#fff";
                 stroke("#222");
                 fill(tileColor);
                 rect(
@@ -117,13 +123,15 @@ class Ray {
 		this.distance = 0;
 		this.wasHitVertical = false;
 
+		this.rayColour = '';
+
 		this.isRayFacingDown = this.rayAngle > 0 && this.rayAngle < Math.PI; // if the ray is greater then 0 and below pi, pi is 270 degrees, therefore the ray is facing down
 		this.isRayFacingUp = !this.isRayFacingDown; // opposite of rayFacingDown
 
 		this.isRayFacingRight = this.rayAngle < 0.5 * Math.PI || this.rayAngle > 1.5 * Math.PI; // more then 270 deg (1.5 * PI) but below 90 (PI/2) means ray is facing right
 		this.isRayFacingLeft = !this.isRayFacingRight; // opposite of rayFacingRight
 	}
-	cast(columnid) {
+	cast() {
 		var xintercept, yintercept;
 		var xstep, ystep;
 		///////////////////////////////////////////
@@ -238,17 +246,33 @@ class Ray {
 			? distanceBetweenPoints(player.x, player.y, vertWallHitX, vertWallHitY)
 			: Number.MAX_VALUE;
 
-		// only store the smallest of the distances
-		this.wallHitX = (horzHitDistance < vertHitDistance) 
-			? horzWallHitX 
-			: vertWallHitX;
-		this.wallHitY = (horzHitDistance < vertHitDistance) 
-			? horzWallHitY 
-			: vertWallHitY;
-		this.distance = (horzHitDistance < vertHitDistance) 
-			? horzHitDistance 
-			: vertHitDistance;
-		this.wasHitVertical = (vertHitDistance < horzHitDistance); // wasHitVertical is true if vertDistance is smaller
+			// only store the smallest of the distances
+			if (vertHitDistance < horzHitDistance){
+				this.wallHitX = vertWallHitX
+				this.wallHitY = vertWallHitY
+				this.distance = vertHitDistance
+				this.wasHitVertical = true;
+			} else {
+				this.wallHitX = horzWallHitX
+				this.wallHitY = horzWallHitY
+				this.distance = horzHitDistance
+				this.wasHitVertical = false;
+			}
+
+			// find wall (x, y) with offset
+		var wallColourX = this.wallHitX - (this.isRayFacingLeft ? 1 : 0);
+		var wallColourY = this.wallHitY - (this.isRayFacingUp ? 1 : 0);
+
+		// find colour of ray
+		if (grid.wallColour(wallColourX, wallColourY) == 'r') {
+			this.rayColour = 'red';
+		} else if (grid.wallColour(wallColourX, wallColourY) == 'g') {
+			this.rayColour = 'green';
+		} else if (grid.wallColour(wallColourX, wallColourY) == 'b') {
+			this.rayColour = 'blue';
+		} else {
+			this.rayColour = '';
+		}
 	}
 
 	render() {
@@ -294,22 +318,72 @@ function keyReleased() {
 
 
 function castAllRays() {
-	var columnId = 0;
-
 	// start first ray subtracting half of the FOV
 	var rayAngle = player.rotationAngle - (FOV_ANGLE / 2);
 
 	rays = [];
 
 	// loop all columns casting the rays
-	for (var i = 0; i < NUM_RAYS; i++) {
+	for (var col = 0; col < NUM_RAYS; col++) {
 		var ray = new Ray(rayAngle);
-		ray.cast(columnId);
+		ray.cast();
 		rays.push(ray);
 
 		rayAngle += FOV_ANGLE / NUM_RAYS;
+	}
+}
 
-		columnId++;
+function render3DProjectedWalls() {
+	for (var i = 0; i < NUM_RAYS; i++) {
+		var ray = rays[i]
+
+		var correctWallDistance = ray.distance * Math.cos(ray.rayAngle - player.rotationAngle);
+
+		// calculate the distance to the projection plane
+
+		var distanceProjectionPlane = (WINDOW_WIDTH / 2) / Math.tan(FOV_ANGLE / 2);
+
+		// projected wall height
+		var wallStripeHeight = (TILE_SIZE / correctWallDistance) * distanceProjectionPlane;
+
+
+		var colour = 0;
+		/*if (ray.wasHitVertical){
+			colour = 255;
+		} else {
+			colour = 180;
+		}*/
+		var alpha = 1.0; 
+		var alphaModifier = (ray.wasHitVertical ? 0 : 80); // darkens the colour if the wall face is vertical
+
+		var blue = 0;
+		var red = 0;
+		var green = 0;
+
+		// wall colours
+		if (ray.rayColour == 'red') { 
+			red = 255 - alphaModifier;
+			green = 100 - alphaModifier;
+			blue = 0;
+		} else if (ray.rayColour == 'green') {
+			red = 0;
+			green = 255 - alphaModifier;
+			blue = 0;
+		} else if (ray.rayColour == 'blue') {
+			red = 0;
+			green = 100 - alphaModifier;
+			blue = 255 - alphaModifier;
+		}
+
+
+		fill("rgba(" + red + ", " + green + ", " + blue + ", " + alpha + ")");
+		noStroke();
+		rect(
+			i * WALL_STRIPE_WIDTH,
+			(WINDOW_HEIGHT / 2) - (wallStripeHeight / 2),
+			WALL_STRIPE_WIDTH,
+			wallStripeHeight
+			);
 	}
 }
 
@@ -336,7 +410,11 @@ function update() {
 }
 
 function draw() {
+	clear("21212121");
 	update();
+
+	render3DProjectedWalls();
+
 	grid.render();
 	for (ray of rays) {
 		ray.render();
