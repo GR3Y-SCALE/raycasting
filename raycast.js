@@ -49,7 +49,7 @@ class Map {
     render() { // minimap
         for (var i = 0; i < MAP_NUM_ROWS; i++) {
             for (var j = 0; j < MAP_NUM_COLS; j++) {
-                var tileX = j * TILE_SIZE; 
+                var tileX = j * TILE_SIZE;
                 var tileY = i * TILE_SIZE;
                 var tileColor = (this.grid[i][j])[0] == 'w' ? "#222" : "#fff";
                 stroke("#222");
@@ -79,7 +79,7 @@ class Player {
 	}
 	update() {
 		this.rotationAngle += this.turnDirection * this.rotationSpeed; //plus the rotation angle by the turnDirection and speed
-		
+
 		var moveStep = this.walkDirection * this.moveSpeed;
 
 		var newPlayerX = this.x + Math.cos(this.rotationAngle) * moveStep; //coordinate X = COS(angle) * hypotenuse, next X coordinate for player
@@ -91,7 +91,7 @@ class Player {
 			this.y = newPlayerY;
 		}
 		//console.log(floor(this.x / TILE_SIZE) + ' ' + floor(this.y / TILE_SIZE)); //shows position on grid (x,y)
-		
+
 		// console.log('angle ' + this.rotationAngle + ' X and Y ' + this.x + ' ' + this.y);// log the rotationAngle, X and Y coordinates
 
 	}
@@ -137,11 +137,11 @@ class Ray {
 		///////////////////////////////////////////
 		// HORIZONTAL RAY-GRID INTERSECTION CODE //
 		///////////////////////////////////////////
-		
+
 		var foundHorzWallHit = false;
 		var horzWallHitX = 0;
 		var horzWallHitY = 0;
-		
+
 		// console.log("isRayFacingDown?", this.isRayFacingDown);
 		// console.log("isRayFacingRight?", this.isRayFacingRight);
 
@@ -181,7 +181,7 @@ class Ray {
 				break; // TODO: change the statement so it isnt a break
 
 			} else {
-				nextHorzTouchX += xstep; // move to the next intercept (x,...) 
+				nextHorzTouchX += xstep; // move to the next intercept (x,...)
 				nextHorzTouchY += ystep; // move to the next intercept (...,y)
 			}
 		}
@@ -189,11 +189,11 @@ class Ray {
 		/////////////////////////////////////////
 		// VERTICAL RAY-GRID INTERSECTION CODE //
 		/////////////////////////////////////////
-		
+
 		var foundVertWallHit = false;
 		var vertWallHitX = 0;
 		var vertWallHitY = 0;
-		
+
 		// console.log("isRayFacingDown?", this.isRayFacingDown);
 		// console.log("isRayFacingRight?", this.isRayFacingRight);
 
@@ -233,14 +233,14 @@ class Ray {
 				break; // TODO: change the statement so it isnt a break
 
 			} else {
-				nextVertTouchX += xstep; // move to the next intercept (x,...) 
+				nextVertTouchX += xstep; // move to the next intercept (x,...)
 				nextVertTouchY += ystep; // move to the next intercept (...,y)
 			}
 		}
 
 		// Calculate both horizontal and vertical distances and choose the smallest value
 		var horzHitDistance = (foundHorzWallHit)  // if true then it will find the distance, otherwise it is assumed that vertHit is smaller
-			? distanceBetweenPoints(player.x, player.y, horzWallHitX, horzWallHitY) 
+			? distanceBetweenPoints(player.x, player.y, horzWallHitX, horzWallHitY)
 			: Number.MAX_VALUE;
 		var vertHitDistance = (foundVertWallHit) // if true then it will find the distance, otherwise it is assumed that horzHit is smaller
 			? distanceBetweenPoints(player.x, player.y, vertWallHitX, vertWallHitY)
@@ -284,7 +284,7 @@ class Ray {
 			MINIMAP_SCALE * this.wallHitY
 		);
 	}
-}	
+}
 
 
 
@@ -353,26 +353,26 @@ function render3DProjectedWalls() {
 		} else {
 			colour = 180;
 		}*/
-		var alpha = 1.0; 
-		var alphaModifier = (ray.wasHitVertical ? 0 : 80); // darkens the colour if the wall face is vertical
+		var alpha = 1.0;
+		var shadingModifier = (ray.wasHitVertical ? 0 : 80); // darkens the colour if the wall face is vertical
 
 		var blue = 0;
 		var red = 0;
 		var green = 0;
 
 		// wall colours
-		if (ray.rayColour == 'red') { 
-			red = 255 - alphaModifier;
-			green = 100 - alphaModifier;
+		if (ray.rayColour == 'red') {
+			red = 255 - shadingModifier;
+			green = 100 - shadingModifier;
 			blue = 0;
 		} else if (ray.rayColour == 'green') {
 			red = 0;
-			green = 255 - alphaModifier;
+			green = 255 - shadingModifier;
 			blue = 0;
 		} else if (ray.rayColour == 'blue') {
 			red = 0;
-			green = 100 - alphaModifier;
-			blue = 255 - alphaModifier;
+			green = 100 - shadingModifier;
+			blue = 255 - shadingModifier;
 		}
 
 
@@ -406,7 +406,7 @@ function setup() {
 
 function update() {
 	player.update();
-	castAllRays(); 
+	castAllRays();
 }
 
 function draw() {
