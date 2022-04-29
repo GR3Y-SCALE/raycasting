@@ -1,4 +1,5 @@
 # raycasting
+ <img src="https://github.com/GR3Y-SCALE/raycasting/blob/main/visual-assets/image.png" style="width:800px;height:500px;"> 
 This is a raycasting engine based off of the wolf 3D engine, there is 2 directories. One containing just the minimap and the other containing a TheoryExample, showing a simplified version of the raycast.js code.
 
 ## Instruction 
